@@ -1,10 +1,20 @@
 import os
 from glob import glob
+from typing import TypedDict
 
 import importlib_resources
 from tutor import hooks
 
+from tutormfe.hooks import MFE_APPS
+
 from .__about__ import __version__
+
+
+class MFEConfig(TypedDict):
+    repository: str
+    version: str
+    port: int
+
 
 ########################################
 # CONFIGURATION
@@ -224,3 +234,17 @@ for path in glob(str(importlib_resources.files("tutor_sbx") / "patches" / "*")):
 
 # This would allow you to run:
 #   $ tutor sbx example-command
+
+#######################################
+# MFE
+#######################################
+
+
+@MFE_APPS.add()  # type: ignore[misc]
+def update_authoring_mfe(mfes: dict[str, MFEConfig]) -> dict[str, MFEConfig]:
+    mfes["authoring"] = {
+        "repository": "https://github.com/WGU-Open-edX/frontend-app-authoring.git",
+        "version": "authz-exploration",
+        "port": 2001,
+    }
+    return mfes
